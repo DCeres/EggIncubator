@@ -1,3 +1,4 @@
+#include <MenuSystem.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -25,6 +26,113 @@ DHT dht(DHTPIN, DHTTYPE);
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
+#define PCD8544_CHAR_HEIGHT 8
+
+class MyRenderer : public MenuComponentRenderer {
+public:
+    void render(Menu const& menu) const {
+        display.clearDisplay();
+        menu.render(*this);
+        menu.get_current_component()->render(*this);
+        display.display();
+    }
+
+    void render_menu_item(MenuItem const& menu_item) const {
+        display.setCursor(0, 1 * PCD8544_CHAR_HEIGHT);
+        display.print(menu_item.get_name());
+    }
+
+    void render_back_menu_item(BackMenuItem const& menu_item) const {
+        display.setCursor(0, 1 * PCD8544_CHAR_HEIGHT);
+        display.print(menu_item.get_name());
+    }
+
+    void render_numeric_menu_item(NumericMenuItem const& menu_item) const {
+        display.setCursor(0, 1 * PCD8544_CHAR_HEIGHT);
+        display.print(menu_item.get_name());
+    }
+
+    void render_menu(Menu const& menu) const {
+        display.setCursor(0, 0 * PCD8544_CHAR_HEIGHT);
+        display.print(menu.get_name());
+    }
+};
+MyRenderer my_renderer;
+
+// Menu callback function
+
+void on_item1_selected(MenuComponent* p_menu_component) {
+    display.setCursor(0, 2 * PCD8544_CHAR_HEIGHT);
+    display.print("Item1 Selectd");
+    display.display();
+    delay(1500); // so we can look the result on the LCD
+}
+
+void on_item2_selected(MenuComponent* p_menu_component) {
+    display.setCursor(0, 2 * PCD8544_CHAR_HEIGHT);
+    display.print("Item2 Selectd");
+    display.display();
+    delay(1500); // so we can look the result on the LCD
+}
+
+void on_item3_selected(MenuComponent* p_menu_component) {
+    display.setCursor(0, 2 * PCD8544_CHAR_HEIGHT);
+    display.print("Item3 Selectd");
+    display.display();
+    delay(1500); // so we can look the result on the LCD
+}
+
+
+// Menu variables
+
+MenuSystem ms(my_renderer);
+MenuItem mm_mi1("Lvl1-Item1(I)", &on_item1_selected);
+MenuItem mm_mi2("Lvl1-Item2(I)", &on_item2_selected);
+Menu mu1("Lvl1-Item3(M)");
+MenuItem mu1_mi1("Lvl2-Item1(I)", &on_item3_selected);
+
+void serial_print_help() {
+    Serial.println("***************");
+    Serial.println("w: go to previus item (up)");
+    Serial.println("s: go to next item (down)");
+    Serial.println("a: go back (right)");
+    Serial.println("d: select \"selected\" item");
+    Serial.println("?: print this help");
+    Serial.println("h: print this help");
+    Serial.println("***************");
+}
+
+void serial_handler() {
+    char inChar;
+    if((inChar = Serial.read())>0) {
+        switch (inChar) {
+            case 'w': // Previus item
+                ms.prev();
+                ms.display();
+                break;
+            case 's': // Next item
+                ms.next();
+                ms.display();
+                break;
+            case 'a': // Back pressed
+                ms.back();
+                ms.display();
+                break;
+            case 'd': // Select pressed
+                ms.select();
+                ms.display();
+                break;
+            case '?':
+            case 'h': // Display help
+                serial_print_help();
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+
 void setup() 
 {
   Serial.begin(115200);
@@ -39,7 +147,19 @@ void setup()
   Wire.begin();
   dht.begin(); // инициализируем объект «dht»  
   sensors.begin();  
+
+  display.setTextSize(1);
   display.clearDisplay();
+  
+  serial_print_help();
+
+  ms.get_root_menu().add_item(&mm_mi1);
+  ms.get_root_menu().add_item(&mm_mi2);
+  ms.get_root_menu().add_menu(&mu1);
+  mu1.add_item(&mu1_mi1);
+  ms.display();
+
+  displayTempHumid();
 }
 
 void displayTempHumid()
@@ -81,11 +201,12 @@ void displayTempHumid()
   display.setCursor(0,20);
   display.print("Temperature2: ");  //  "Температура: "
   display.print(t2);
-  display.print(" C");
+  display.print(" C");  
 }
 
 void loop() 
 {
-  displayTempHumid();
+  serial_handler();
+  //displayTempHumid();
   display.display();
 }
