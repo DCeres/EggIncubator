@@ -19,6 +19,9 @@
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+const byte tempPin = A3;
+const byte keyPin = A2;
+
 // создаем экземпляр класса для датчика DHT11:
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -137,6 +140,11 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(F("SSD1306 Start"));
+
+  pinMode( tempPin, INPUT );
+  pinMode( keyPin, INPUT );
+  
+  
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) 
   { // Address 0x3C for 128x32
@@ -161,6 +169,41 @@ void setup()
 
   displayTempHumid();
 }
+
+#define B 4036.0 // B-коэффициент
+#define SERIAL_R 100000.0 // сопротивление последовательного резистора, 102 кОм
+#define THERMISTOR_R 100000.0 // номинальное сопротивления термистора, 100 кОм
+#define NOMINAL_T 25.0 // номинальная температура (при которой TR = 100 кОм)
+float getAnlalogTemp()
+{
+    int t = analogRead( tempPin );    
+    float tr = 1023.0 / t - 1;
+    tr = SERIAL_R / tr;
+     
+    float steinhart  = tr / THERMISTOR_R; // (R/Ro)
+    steinhart = log(steinhart); // ln(R/Ro)
+    steinhart /= B; // 1/B * ln(R/Ro)
+    steinhart += 1.0 / (NOMINAL_T + 273.15); // + (1/To)
+    steinhart = 1.0 / steinhart; // Invert
+    steinhart -= 273.15; 
+    return steinhart;
+}
+
+
+
+int getAnlalogKey()
+{
+    int btn = 0;
+    int val = analogRead( keyPin );    
+    if (val > 700)
+      btn = 3;
+    else if (val > 450)
+      btn = 2;
+    else if (val > 200)
+      btn = 1;
+    return btn;
+}
+
 
 void displayTempHumid()
 {
@@ -191,22 +234,28 @@ void displayTempHumid()
   display.setTextColor(WHITE);
   display.setTextSize(1);
   display.setCursor(0,0);
-  display.print("Humidity: ");  //  "Влажность: "
+  display.print(">");  //  "Влажность: "
   display.print(h);
   display.print(" %");
-  display.setCursor(0,10);
-  display.print("Temperature: ");  //  "Температура: "
+  display.setCursor(0,8);
+  display.print("t1: ");  //  "Температура: "
   display.print(t);
   display.print(" C");
-  display.setCursor(0,20);
-  display.print("Temperature2: ");  //  "Температура: "
+  display.setCursor(0,16);
+  display.print("t2: ");  //  "Температура: "
   display.print(t2);
   display.print(" C");  
+  display.setCursor(0,24);
+  display.print("t3: ");  //  "Температура: "
+  display.print(getAnlalogTemp());
+  display.print(" C");  
+
+  display.print(getAnlalogKey());
 }
 
 void loop() 
 {
   serial_handler();
-  //displayTempHumid();
+  displayTempHumid();
   display.display();
 }
