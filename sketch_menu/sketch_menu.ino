@@ -19,12 +19,15 @@ void draw()
 
 void setup() 
 {
-  u8g2.begin();
+  Serial.begin(115200);
+  Serial.println(F("LCD Test Start"));
+  //u8g2.begin();
 }
 
 void loop() {
-  u8g2.clearBuffer();
-  draw();
-  u8g2.sendBuffer();
-  delay(500);
+  //u8g2.clearBuffer();
+  //draw();
+  //u8g2.sendBuffer();
+  delay(1500);
+  Serial.println(F("Next draw1"));
 }
