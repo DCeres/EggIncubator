@@ -1,16 +1,19 @@
 {
-    "configurations": [
-        {
-            "name": "Win32",
-            "includePath": [
-                "d:\\\\bin\\\\arduino-1.8.9\\\\tools\\\\**",
-                "d:\\\\bin\\\\arduino-1.8.9\\\\hardware\\\\arduino\\\\avr\\\\**"
-            ],
-            "forcedInclude": [
-                "d:\\\\bin\\\\arduino-1.8.9\\\\hardware\\\\arduino\\\\avr\\\\cores\\\\arduino\\\\Arduino.h"
-            ],
-            "intelliSenseMode": "msvc-x64"
-        }
-    ],
+    "configurations": [{
+        "name": "Win32",
+        "includePath": [
+            "d:\\bin\\arduino-1.8.9\\tools\\**",
+            "d:\\bin\\arduino-1.8.9\\hardware\\arduino\\avr\\**",
+            "C:\\Users\\oliyn\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.2\\**",
+            "C:\\Users\\oliyn\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+            "c:\\Users\\oliyn\\Documents\\Arduino\\libraries"
+
+        ],
+        "forcedInclude": [
+            "d:\\bin\\arduino-1.8.9\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
+            "C:\\Users\\oliyn\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.2\\cores\\arduino\\Arduino.h"
+        ],
+        "intelliSenseMode": "msvc-x64"
+    }],
     "version": 4
 }
