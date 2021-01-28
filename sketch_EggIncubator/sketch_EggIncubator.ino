@@ -1,14 +1,9 @@
-#include <MenuSystem.h>
+#pragma once
 
 #include "globals.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
-
-#define DHTPIN 2     // контакт, к которому подключаемся
-#define DHTTYPE DHT11   // для датчика DHT11
-// контакт для данных подключаем к цифровому контакту 3 на Arduino:
-#define ONE_WIRE_BUS 3
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -17,15 +12,18 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 const byte tempPin = A3;
 const byte keyPin = A2;
 
+#define DHTPIN 2     // контакт, к которому подключаемся
+#define DHTTYPE DHT11   // для датчика DHT11
 // создаем экземпляр класса для датчика DHT11:
 DHT dht(DHTPIN, DHTTYPE);
 
+// контакт для данных подключаем к цифровому контакту 3 на Arduino:
+#define ONE_WIRE_BUS 3
 // создаем экземпляр класса OneWire
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 #define PCD8544_CHAR_HEIGHT 8
-
 class MyRenderer : public MenuComponentRenderer {
 public:
     void render(Menu const& menu) const {

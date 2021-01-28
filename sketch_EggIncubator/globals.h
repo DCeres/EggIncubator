@@ -1,3 +1,4 @@
+#pragma once
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -43,3 +44,12 @@ enum pinAdress
     pin_engine22 = 13,
 
 };
+
+uint32_t iv_timer = 0; // Таймер дня
+uint32_t iv_srv_timer = 0; // Таймер переворота
+uint32_t iv_cool_timer = 0; // Таймер обдува
+uint32_t iv_temp_timer = 0; // Таймер опроса датчиков
+uint32_t lcd_time = 0;  // Переменная времени для выключения экрана
+
+float iv_temp = 37.9; // Желаемая температура
+float iv_temp_1 = 20; // Показания первого датчика
